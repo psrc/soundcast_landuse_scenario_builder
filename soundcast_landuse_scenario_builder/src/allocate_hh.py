@@ -288,11 +288,11 @@ new_person_df = new_person_df.merge(df_hh[['household_id','hhno']], on='househol
 # In cases where we want to update a full region we can turn this off and export all records as a new h5
 if config['update_existing_h5']:    
     export_hh_df = old_h5_hh[~old_h5_hh['hhtaz'].isin(df_hh['hhtaz'])]
-    export_hh_df = export_hh_df.append(df_hh[export_hh_df.columns])
+    export_hh_df = pd.concat([export_hh_df, df_hh[export_hh_df.columns]])
 
     # Select persons from households within the final export list
     export_person_df = old_h5_person[old_h5_person['hhno'].isin(export_hh_df['hhno'])]
-    export_person_df = export_person_df.append(new_person_df[old_h5_person.columns])
+    export_person_df = pd.concat([export_person_df, new_person_df[old_h5_person.columns]])
 else:
     export_hh_df = df_hh.copy()
     export_person_df = new_person_df.copy()

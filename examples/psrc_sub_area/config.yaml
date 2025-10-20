@@ -1,7 +1,7 @@
 # Set data and user input location
-input_land_use_path: 'C:\Workspace\land_use_test\example_small_area\lu_allocation_inputs\land_use\2050'
-input_pums_data_path: 'C:\Workspace\land_use_test\example_small_area\lu_allocation_inputs\pums_data'
-input_gis_data_path: 'C:\Workspace\land_use_test\example_small_area\lu_allocation_inputs\gis_data.gdb'
+input_land_use_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\land_use\2050'
+input_pums_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\pums_data'
+input_gis_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\gis_data.gdb'
 
 # File names. Most likely, these will remain unchanged. 
 seed_hh_file: 'seed_households.csv'
@@ -9,7 +9,7 @@ seed_person_file: 'seed_persons.csv'
 parcel_file: 'parcels_urbansim.txt'
 synthetic_pop_file: 'hh_and_persons.h5'
 puma_layer: 'pumas_2010'
-taz_layer: 'psrc_no_seattle'
+taz_layer: 'study_area_taz'
 
 # Output dir. This is where the inputs to populationsim will reside. 
 # Warning- this entire directory will be over-written. 

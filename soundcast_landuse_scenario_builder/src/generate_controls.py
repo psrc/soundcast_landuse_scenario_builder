@@ -185,7 +185,7 @@ unpopulated_tazs = taz_study_area[~taz_study_area.taz_id.isin(df.taz_id)][['taz_
 
 df['imputed_regional_dist'] = 0    # Flag to identify this zone had no controled distribution
 unpopulated_tazs['imputed_regional_dist'] = 1
-df = df.append(unpopulated_tazs)
+df = pd.concat([df, unpopulated_tazs])
 df = df.sort_values('taz_id')
 df = df.drop_duplicates()
 
