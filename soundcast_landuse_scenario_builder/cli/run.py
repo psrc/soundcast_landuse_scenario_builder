@@ -3,6 +3,10 @@ import yaml
 import argparse
 import sys
 from soundcast_landuse_scenario_builder.utils.validate_settings import ValidateSettings
+import soundcast_landuse_scenario_builder.src.generate_controls
+import soundcast_landuse_scenario_builder.src.allocate_hh
+
+
 # file = Path().joinpath(configuration.args.configs_dir, "config.yaml")
 # config = yaml.safe_load(open(file))
 
@@ -21,6 +25,8 @@ def add_run_args(parser, multiprocess=True):
 def run(args):
     config = yaml.safe_load(open(Path(f"{args.configs_dir}/config.yaml")))
     config = ValidateSettings(**config)
+    soundcast_landuse_scenario_builder.src.generate_controls.run(config)
+    soundcast_landuse_scenario_builder.src.allocate_hh.run(config)
     print('Done')
 
 if __name__ == "__main__":
