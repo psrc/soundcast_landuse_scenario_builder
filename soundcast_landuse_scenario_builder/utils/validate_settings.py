@@ -5,6 +5,7 @@ from pathlib import Path
 
 class ValidateSettings(BaseModel):
     # Set data and user input location
+    configs_dir: str
     input_land_use_path: str
     input_pums_data_path: str
     input_gis_data_path: str
