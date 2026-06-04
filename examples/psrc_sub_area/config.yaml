@@ -4,8 +4,6 @@ input_pums_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_in
 input_gis_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\gis_data.gdb'
 
 # File names. Most likely, these will remain unchanged. 
-seed_hh_file: 'seed_households.csv'
-seed_person_file: 'seed_persons.csv'
 parcel_file: 'parcels_urbansim.txt'
 synthetic_pop_file: 'hh_and_persons.h5'
 puma_layer: 'pumas_2010'
@@ -14,6 +12,9 @@ taz_layer: 'study_area_taz'
 # Output dir. This is where the inputs to populationsim will reside. 
 # Warning- this entire directory will be over-written. 
 output_dir: 'C:\Workspace\land_use_test\example_small_area\populationsim_run_dir'
+
+# PUMS data year
+pums_year: 2024
 
 # Results for only study area TAZs can be updated if True
 # If False, only synthetic records will be written to h5 file

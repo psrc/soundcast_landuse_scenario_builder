@@ -25,6 +25,8 @@ import yaml
 from pathlib import Path
 import shutil
 
+from soundcast_landuse_scenario_builder.utils import download_pums_data, prepare_pums_data
+
 def h5_to_data_frame(h5file, integer_cols, table_name):
     """Load h5 tables as Pandas DataFrame object"""
     
@@ -211,10 +213,12 @@ def run(config):
     df.to_csv(popsim_run_dir_path/'data'/'future_controls.csv', index=False)
 
     # Create seed hh and person files; include only seed households and persons from PUMAs within the study area
-    seed_hh = pd.read_csv(pums_path/config.seed_hh_file)
+    seed_hh = download_pums_data(config.pums_year, "h", pums_path)
+    seed_persons = download_pums_data(config.pums_year, "p", pums_path)
+    seed_hh, seed_persons = prepare_pums_data(seed_hh, seed_persons, config.pums_year)
+    
     seed_hh = seed_hh[seed_hh['PUMA'].isin(taz_puma_gdf['PUMA'])]
     seed_hh.to_csv(popsim_run_dir_path/'data'/'seed_households.csv', index=False)
 
-    seed_persons = pd.read_csv(pums_path/config.seed_person_file)
     seed_persons = seed_persons[seed_persons['hhnum'].isin(seed_hh['hhnum'])]
     seed_persons.to_csv(popsim_run_dir_path/'data'/'seed_persons.csv', index=False)

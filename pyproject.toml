@@ -24,6 +24,7 @@ dependencies = [
     "h5py>=3.14.0",
     "pydantic>=2.12.3",
     "populationsim>=0.10.0",
+    "us>=3.2.0",
 ]
 
 [project.scripts]

@@ -9,9 +9,9 @@ class ValidateSettings(BaseModel):
     input_land_use_path: str
     input_pums_data_path: str
     input_gis_data_path: str
+    # PUMS data year
+    pums_year: int
     # File names. Most likely, these will remain unchanged. 
-    seed_hh_file: str
-    seed_person_file: str
     parcel_file: str
     synthetic_pop_file: str
     puma_layer: str
