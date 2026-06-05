@@ -11,10 +11,11 @@ class ValidateSettings(BaseModel):
     input_gis_data_path: str
     # PUMS data year
     pums_year: int
+    # PUMS overwrite download (Set to True to force re-download of PUMS data)
+    pums_overwrite: bool
     # File names. Most likely, these will remain unchanged. 
     parcel_file: str
     synthetic_pop_file: str
-    puma_layer: str
     taz_layer: str
 
     # Output dir. This is where the inputs to populationsim will reside. 
@@ -32,7 +33,6 @@ class ValidateSettings(BaseModel):
 
     taz_id: str
     block_group_id: str
-    puma_id: str
     parcel_id: str
 
     household_cols: list[str] 

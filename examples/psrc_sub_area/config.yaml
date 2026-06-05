@@ -6,7 +6,6 @@ input_gis_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inp
 # File names. Most likely, these will remain unchanged. 
 parcel_file: 'parcels_urbansim.txt'
 synthetic_pop_file: 'hh_and_persons.h5'
-puma_layer: 'pumas_2010'
 taz_layer: 'study_area_taz'
 
 # Output dir. This is where the inputs to populationsim will reside. 
@@ -14,7 +13,9 @@ taz_layer: 'study_area_taz'
 output_dir: 'C:\Workspace\land_use_test\example_small_area\populationsim_run_dir'
 
 # PUMS data year
-pums_year: 2024
+pums_year: 2021
+# PUMS overwrite download (Set to True to force re-download of PUMS data)
+pums_overwrite: False
 
 # Results for only study area TAZs can be updated if True
 # If False, only synthetic records will be written to h5 file
@@ -27,7 +28,6 @@ update_persons: True
 
 taz_id: 'taz'
 block_group_id: 'geoid10'
-puma_id: 'pumace10'
 parcel_id: 'parcelid'
 
 household_cols: ['hh_size_1', 'hh_size_2', 'hh_size_3',
