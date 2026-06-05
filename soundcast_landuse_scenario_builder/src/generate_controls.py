@@ -25,6 +25,8 @@ import yaml
 from pathlib import Path
 import shutil
 
+from soundcast_landuse_scenario_builder.utils import download_pums_data, prepare_pums_data, download_puma_shp
+
 def h5_to_data_frame(h5file, integer_cols, table_name):
     """Load h5 tables as Pandas DataFrame object"""
     
@@ -84,18 +86,15 @@ def run(config):
     # 2 layers are required, including regionwide PUMAs.
     # a layer that covers a specific study area that can be altered is provided
     # Only households within the study area will be available for allocation
+    puma_gdf = download_puma_shp(config.pums_year)
     if str(gis_path)[-4:]=='.gdb':
         taz_study_area = gpd.read_file(gis_path, layer=config.taz_layer)
         # Program will use taz_id & puma_id going forward
         taz_study_area.rename(columns={config.taz_id : 'taz_id'}, inplace = True)
-        puma_gdf = gpd.read_file(gis_path, layer=config.puma_layer)
-        puma_gdf.rename(columns={config.puma_id : 'PUMA'}, inplace = True)
     else:
         taz_study_area = gpd.read_file(gis_path/config.taz_layer/'.shp')
         # Program will use taz_id & puma_id going forward
         taz_study_area.rename(columns={config.taz_id : 'taz_id'}, inplace = True)
-        puma_gdf = gpd.read_file(gis_path/config.puma_layer/'.shp')
-        puma_gdf.rename(columns={config.puma_id : 'PUMA'}, inplace = True)
 
     # Load parcel data from Soundcast input as geoDataFrame object
     parcels_gdf = pd.read_csv(land_use_path/config.parcel_file, sep = ' ')
@@ -211,10 +210,12 @@ def run(config):
     df.to_csv(popsim_run_dir_path/'data'/'future_controls.csv', index=False)
 
     # Create seed hh and person files; include only seed households and persons from PUMAs within the study area
-    seed_hh = pd.read_csv(pums_path/config.seed_hh_file)
+    seed_hh = download_pums_data(config.pums_year, "h", pums_path,overwrite = config.pums_overwrite)
+    seed_persons = download_pums_data(config.pums_year, "p", pums_path,overwrite = config.pums_overwrite)
+    seed_hh, seed_persons = prepare_pums_data(seed_hh, seed_persons, config.pums_year)
+    
     seed_hh = seed_hh[seed_hh['PUMA'].isin(taz_puma_gdf['PUMA'])]
     seed_hh.to_csv(popsim_run_dir_path/'data'/'seed_households.csv', index=False)
 
-    seed_persons = pd.read_csv(pums_path/config.seed_person_file)
     seed_persons = seed_persons[seed_persons['hhnum'].isin(seed_hh['hhnum'])]
     seed_persons.to_csv(popsim_run_dir_path/'data'/'seed_persons.csv', index=False)
