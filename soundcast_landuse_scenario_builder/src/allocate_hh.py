@@ -345,7 +345,7 @@ def run(config):
     # Worker type
     # Get worker type based on usual hours worker per week (WKHP from PUMS)
     # Assume less than 35 as part-time
-    new_person_df.loc[new_person_df["WKHP"] == 0, "pwtyp"] = 0  # not a worker
+    new_person_df.loc[new_person_df["WKHP"].isna(), "pwtyp"] = 0  # not a worker
     new_person_df.loc[new_person_df["WKHP"] >= 35, "pwtyp"] = 1  # full-time worker
     new_person_df.loc[
         (new_person_df["WKHP"] < 35) & (new_person_df["WKHP"] > 0), "pwtyp"
@@ -360,7 +360,7 @@ def run(config):
         ((new_person_df["SCH"] > 1) & (new_person_df["pwtyp"] == 1)), "pstyp"
     ] = 2  # student & full-time job -> part-time student
     # If no SCH information, set to 0 (not a student); this occurs for people of pagey 0-2
-    new_person_df.loc[new_person_df["SCH"] == 0, "pstyp"] = 0
+    new_person_df.loc[new_person_df["SCH"].isna(), "pstyp"] = 0
 
     # Person type, based on employment, age, school status
     new_person_df.loc[new_person_df["pwtyp"] == 1, "pptyp"] = 1  # Full time worker
@@ -460,8 +460,13 @@ def run(config):
     for key in ["Person", "Household"]:
         out_h5.create_group(key)
     for col in myh5["Person"].keys():
+        # check for null values before converting to int
+        if export_person_df[col].isnull().any():
+            raise ValueError(f"Null values found in column {col} for export_person_df. Please address null values before exporting to h5.")
         out_h5["Person"][col] = export_person_df[col].astype("int").values
     for col in myh5["Household"].keys():
+        if export_hh_df[col].isnull().any():
+            raise ValueError(f"Null values found in column {col} for export_hh_df. Please address null values before exporting to h5.")
         out_h5["Household"][col] = export_hh_df[col].astype("int").values
 
     out_h5.close()
