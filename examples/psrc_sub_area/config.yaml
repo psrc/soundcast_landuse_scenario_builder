@@ -1,7 +1,10 @@
 # Set data and user input location
-input_land_use_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\land_use\2050'
-input_pums_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\pums_data'
-input_gis_data_path: 'C:\Workspace\stefan\lu_allocation_inputs\lu_allocation_inputs\gis_data.gdb'
+input_dir: 'C:\workspace\psrc_sub_area_inputs'
+# Name of GIS layer or shapefile within input_dir. This layer must contain the TAZs for the study area.
+gis_layer_name: 'sub_area_taz.shp'
+#input_land_use_path: 'C:\Workspace\lu_allocation_inputs\land_use\2050's
+# input_pums_data_path: 'C:\Workspace\lu_allocation_inputs\pums_data'
+#input_gis_data_path: 'C:\Workspace\lu_allocation_inputs\gis_data.gdb'
 
 # File names. Most likely, these will remain unchanged. 
 parcel_file: 'parcels_urbansim.txt'
@@ -10,7 +13,7 @@ taz_layer: 'study_area_taz'
 
 # Output dir. This is where the inputs to populationsim will reside. 
 # Warning- this entire directory will be over-written. 
-output_dir: 'C:\Workspace\land_use_test\example_small_area\populationsim_run_dir'
+output_dir: 'C:\Workspace\land_use_test\psrc_sub_area_inputs\populationsim_run_dir'
 
 # PUMS data year
 pums_year: 2021
@@ -21,7 +24,6 @@ pums_overwrite: False
 # If False, only synthetic records will be written to h5 file
 # Set to True for limited sub-area analysis or False for full-scale regional analysis
 update_existing_h5: True
-
 update_jobs: True
 update_hh: True
 update_persons: True
@@ -32,13 +34,13 @@ parcel_id: 'parcelid'
 
 household_cols: ['hh_size_1', 'hh_size_2', 'hh_size_3',
        'hh_size_4', 'hh_size_5', 'hh_size_6', 'hh_size_7_plus', 'workers_0',
-       'workers_1', 'workers_2', 'workers_3_plus', 'income_lt15',
-       'income_gt15-lt30', 'income_gt30-lt60', 'income_gt60-lt100',
-       'income_gt100']
+       'workers_1', 'workers_2', 'workers_3_plus', 'income_lt25',
+       'income_gt25_lt50', 'income_gt50_lt75', 'income_gt75_lt100',
+       'income_gt100_lt200', 'income_gt200', 'rent']
 
 person_cols: ['school_no', 'school_yes', 'male',
-       'female', 'age_19_and_under', 'age_20_to_35', 'age_35_to_60',
-       'age_above_60', 'is_worker', 'white_non_hispanic', 'black_non_hispanic',
+       'female', 'age_5_and_under', 'age_5_to_9', 'age_10_to_14', 'age_15_to_17', 'age_18_to_24', 'age_25_to_34', 'age_35_to_44',
+       'age_45_to_54', 'age_55_to_64', 'age_65_to_74', 'age_75_to_84', 'age_above_85', 'is_worker', 'white_non_hispanic', 'black_non_hispanic',
        'asian_non_hispanic', 'other_non_hispanic',
        'two_or_more_races_non_hispanic', 'white_hispanic',
        'non_white_hispanic']

@@ -42,7 +42,7 @@ def run(config):
     )
 
     # Set up other paths
-    land_use_path = Path(config.input_land_use_path)
+    land_use_path = Path(config.input_dir)
 
     # Update controls from allocation file before running popsim:
     if config.update_hh or config.update_person:
@@ -174,7 +174,9 @@ def run(config):
     new_parcel_df = new_parcel_df.merge(
         df, left_on="parcelid", right_index=True, how="left"
     )
-    new_parcel_df["hh_p"] = new_parcel_df["new_hh"].fillna(new_parcel_df["hh_p"])
+    new_parcel_df["hh_p"] = new_parcel_df["hh_p"].where(
+        new_parcel_df["new_hh"].isna(), new_parcel_df["new_hh"]
+    )
     new_parcel_df.drop("new_hh", axis=1, inplace=True)
 
     # Update employment

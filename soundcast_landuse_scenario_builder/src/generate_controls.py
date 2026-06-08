@@ -62,18 +62,72 @@ def recode(df, col, new_col, bins, labels, group_by_col):
 
     return pd.crosstab(df[group_by_col], df[new_col]).rename_axis(None, axis=1)
 
+def apply_seed_expressions(df_expr, context):
+    """Apply configured seed expressions using pandas eval with a Python fallback."""
+    columns_by_lower = {col.lower(): col for col in df_expr.columns}
+    description_col = columns_by_lower.get('description')
+    target_col = columns_by_lower.get('target')
+    column_col = columns_by_lower.get('column')
+    expression_col = columns_by_lower.get('expression')
+
+    if target_col is None or expression_col is None:
+        return context, []
+
+    expression_log = []
+    target_to_output_file = {
+        'seed_hh': 'data/seed_households.csv',
+        'seed_persons': 'data/seed_persons.csv',
+    }
+
+    for index, row in df_expr.iterrows():
+        description = row.get(description_col, f'row {index}') if description_col else f'row {index}'
+        target = row.get(target_col)
+        column = row.get(column_col) if column_col else None
+        expression = row.get(expression_col)
+
+        if isinstance(description, str) and description.strip().startswith('#'):
+            continue
+
+        if pd.isna(target) or pd.isna(expression):
+            continue
+
+        target = str(target).strip()
+        expression = str(expression).strip()
+        if not target or target not in context or not expression:
+            continue
+
+        print(f"Applying expression: {description}")
+        try:
+            result = pd.eval(expression, local_dict=context, engine='python', parser='python')
+        except Exception:
+            result = eval(expression, {"__builtins__": {}, "len": len}, context)
+        if isinstance(column, str) and column.strip():
+            context[target][column.strip()] = result
+        else:
+            context[target] = result
+
+        if target in target_to_output_file:
+            expression_log.append({
+                'description': description,
+                'target': target,
+                'column': column.strip() if isinstance(column, str) else '',
+                'expression': expression,
+                'output_file': target_to_output_file[target],
+            })
+
+    return context, expression_log
 
 #config = yaml.safe_load(open("config.yaml"))
-def run(config):
+def run(config, args):
 # create output dir if it doesn't exist
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
 
     # Setup paths
     popsim_run_dir_path = Path(config.output_dir)
-    land_use_path = Path(config.input_land_use_path)
-    pums_path = Path(config.input_pums_data_path)
-    gis_path = Path(config.input_gis_data_path)
+    land_use_path = Path(config.input_dir)
+    pums_path = Path(os.path.join(config.input_dir, "pums_data"))
+    gis_path = Path(os.path.join(config.input_dir, config.gis_layer_name))
 
     # create sub-directories in popsim folder:
     for folder in ['configs','data','output']:
@@ -92,7 +146,7 @@ def run(config):
         # Program will use taz_id & puma_id going forward
         taz_study_area.rename(columns={config.taz_id : 'taz_id'}, inplace = True)
     else:
-        taz_study_area = gpd.read_file(gis_path/config.taz_layer/'.shp')
+        taz_study_area = gpd.read_file(os.path.join(config.input_dir,config.gis_layer_name))
         # Program will use taz_id & puma_id going forward
         taz_study_area.rename(columns={config.taz_id : 'taz_id'}, inplace = True)
 
@@ -143,7 +197,7 @@ def run(config):
     hh_workers = hh_workers.rename(columns={0:'hhwkrs'})
     study_area_hhs = update_df(study_area_hhs, 'hhno', hh_workers, 'hhno', 'hhwkrs')
 
-    # Household categories
+  # Household categories
     col_list = []
     # total households:
     col_list.append(pd.DataFrame(study_area_hhs.groupby('taz_id').size(), columns = ['hh_taz_weight']))
@@ -154,8 +208,15 @@ def run(config):
     col_list.append(recode(study_area_hhs, 'hhwkrs', 'num_workers', [-1, 0, 1, 2, 999], 
                         ['workers_0','workers_1', 'workers_2', 'workers_3_plus'], 'taz_id'))
     # income 
-    col_list.append(recode(study_area_hhs, 'hhincome', 'income_cat', [-1, 15000, 30000, 60000, 100000, 999999999], 
-                        ['income_lt15','income_gt15-lt30', 'income_gt30-lt60', 'income_gt60-lt100', 'income_gt100'], 'taz_id'))
+    col_list.append(recode(study_area_hhs, 'hhincome', 'income_cat', [-1, 25000, 50000, 75000, 100000, 200000, 999999999], 
+                        ['income_lt25','income_gt25_lt50', 'income_gt50_lt75', 'income_gt75_lt100', 'income_gt100_lt200', 'income_gt200'], 'taz_id'))
+
+    # # cars
+    # col_list.append(recode(study_area_hhs, 'hhvehs', 'num_cars', [-1, 0, 1, 2, 3, 999], 
+    #                     ['cars_none','cars_one', 'cars_two', 'cars_three_or_more'], 'taz_id'))
+    
+    # rent
+    col_list.append(recode(study_area_hhs, 'hownrent', 'rent', [-1, 1, 999], ['own','rent'], 'taz_id'))
 
     # Person categories
     # Total persons
@@ -165,8 +226,9 @@ def run(config):
     # Gender:
     col_list.append(recode(study_area_persons, 'pgend', 'gender', [0, 1, 100], ['male','female'], 'taz_id'))
     # Age:
-    col_list.append(recode(study_area_persons, 'pagey', 'age', [-1, 19, 35, 60, 999], 
-                        ['age_19_and_under', 'age_20_to_35', 'age_35_to_60', 'age_above_60'], 'taz_id'))
+    col_list.append(recode(study_area_persons, 'pagey', 'age', [-1, 5, 10, 15, 18, 25, 35, 45, 55, 65, 75, 85, 999], 
+                        ['age_5_and_under', 'age_5_to_9', 'age_10_to_14', 'age_15_to_17', 'age_18_to_24', 'age_25_to_34', 'age_35_to_44',
+                         'age_45_to_54', 'age_55_to_64', 'age_65_to_74', 'age_75_to_84', 'age_above_85'], 'taz_id'))
     # Worker status
     col_list.append(recode(study_area_persons, 'pwtyp', 'worker', [0, 999], ['is_worker'], 'taz_id'))
 
@@ -212,10 +274,26 @@ def run(config):
     # Create seed hh and person files; include only seed households and persons from PUMAs within the study area
     seed_hh = download_pums_data(config.pums_year, "h", pums_path,overwrite = config.pums_overwrite)
     seed_persons = download_pums_data(config.pums_year, "p", pums_path,overwrite = config.pums_overwrite)
-    seed_hh, seed_persons = prepare_pums_data(seed_hh, seed_persons, config.pums_year)
+    # seed_hh, seed_persons = prepare_pums_data(seed_hh, seed_persons, config.pums_year)
     
-    seed_hh = seed_hh[seed_hh['PUMA'].isin(taz_puma_gdf['PUMA'])]
+    # Modify seed household and person files based on configured expressions, which can be used to apply filters or adjustments to the seed data. Expressions should be in pandas eval format and can refer to any column in the seed household or person data, as well as the taz_puma_gdf and numpy and pandas libraries. See the example expression file for details.
+    expr_file = Path(f"{args.configs_dir}/seed_expressions.csv")
+    if expr_file.is_file():
+        df_expr = pd.read_csv(expr_file)
+        context, expression_log = apply_seed_expressions(df_expr, {
+            'seed_hh': seed_hh,
+            'seed_persons': seed_persons,
+            'taz_puma_gdf': taz_puma_gdf,
+            'np': np,
+            'pd': pd,
+        })
+
+        seed_hh = context['seed_hh']
+        seed_persons = context['seed_persons']
+
+
+    # seed_hh = seed_hh[seed_hh['PUMA'].isin(taz_puma_gdf['PUMA'])]
     seed_hh.to_csv(popsim_run_dir_path/'data'/'seed_households.csv', index=False)
 
-    seed_persons = seed_persons[seed_persons['hhnum'].isin(seed_hh['hhnum'])]
+    # seed_persons = seed_persons[seed_persons['hhnum'].isin(seed_hh['hhnum'])]
     seed_persons.to_csv(popsim_run_dir_path/'data'/'seed_persons.csv', index=False)

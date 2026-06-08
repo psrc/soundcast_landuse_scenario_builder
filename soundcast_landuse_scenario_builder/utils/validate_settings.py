@@ -6,9 +6,8 @@ from pathlib import Path
 class ValidateSettings(BaseModel):
     # Set data and user input location
     configs_dir: str
-    input_land_use_path: str
-    input_pums_data_path: str
-    input_gis_data_path: str
+    input_dir: str
+    gis_layer_name: str
     # PUMS data year
     pums_year: int
     # PUMS overwrite download (Set to True to force re-download of PUMS data)

@@ -1,0 +1,11 @@
+Description,Target,Column,Expression
+Filter for person/household matches,seed_persons,,"seed_persons[seed_persons[""SERIALNO""].isin(seed_hh[""SERIALNO""])].copy()"
+Filter for person/household matches,seed_hh,,"seed_hh[seed_hh[""SERIALNO""].isin(seed_persons[""SERIALNO""])].copy()"
+Select only seed households from TAZ area,seed_hh,,"seed_hh[seed_hh[""PUMA""].isin(taz_puma_gdf[""PUMA""])].copy()"
+Build household lookup indexed by SERIALNO,seed_hh,,"seed_hh.set_index(""SERIALNO"", drop=False)"
+Generate unique hhnum sequence,seed_hh,hhnum,"np.arange(1, seed_hh.shape[0] + 1)"
+Reindex hhnum to person SERIALNO order,seed_persons,hhnum,"seed_hh[""hhnum""].reindex(seed_persons[""SERIALNO""]).to_numpy()"
+Household workers flag from ESR,seed_persons,is_worker,"seed_persons[""ESR""].isin([1, 2, 4, 5]).fillna(False).astype(""int8"")"
+Household worker count from person table,seed_hh,worker_count,"seed_hh[""hhnum""].map(seed_persons.groupby(""hhnum"")[""is_worker""].sum()).fillna(-99).astype(""int16"")"
+Apply ADJINC income adjustment,seed_hh,HINCP,"seed_hh[""HINCP""] * (seed_hh[""ADJINC""] / 1000000)"
+Apply 2022 dollar factor,seed_hh,HINCP,"seed_hh[""HINCP""] * (1.029928 * 1.08091182)"

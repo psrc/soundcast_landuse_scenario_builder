@@ -26,7 +26,7 @@ def run(args):
     config = yaml.safe_load(open(Path(f"{args.configs_dir}/config.yaml")))
     config['configs_dir'] = args.configs_dir
     config = ValidateSettings(**config)
-    soundcast_landuse_scenario_builder.src.generate_controls.run(config)
+    soundcast_landuse_scenario_builder.src.generate_controls.run(config, args)
     soundcast_landuse_scenario_builder.src.allocate_hh.run(config)
     print('Done')
 
