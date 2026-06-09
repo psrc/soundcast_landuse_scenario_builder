@@ -22,28 +22,21 @@ You can run any command inside the managed environment by prefixing it with `uv 
 
 ## Inputs
 
-The tool requires a small set of local inputs. [Users can download example input data here](https://file.ac/zMj1JWnmnGg/). Unzip these folders to a convenient location on your local machine. For example purposes, we will assume the data has been extracted to `C:\users\test\landuse_scenario_test`. The paths below are then specified in **config.yaml** for your run.
+The tool requires a small set of local inputs. [Users can download example input data here](https://psrc.files.com/f/e76435638592e0b5). Unzip these folders to a convenient location on your local machine. For example purposes, we will assume the data has been extracted to `C:\users\test\landuse_scenario_test`. The paths below are then specified in **config.yaml** for your run.
 
 PUMS household/person seed records and the matching PUMA boundaries are downloaded automatically based on the `pums_year` setting, so they do **not** need to be provided as inputs.
 
 ### Configuring Inputs
 The example configuration lives in [examples/psrc_sub_area/config.yaml](examples/psrc_sub_area/config.yaml). Copy or edit this file for your own run and update the following input locations.
 
-- **input_land_use_path**
+- **input_dir**
   - Soundcast parcel and synthetic population files.
      - The parcel file (parcels_urbansim.txt) will be used to allocate households from TAZ-level controls to parcels. The parcel file used here will determine the spatial detail of any changes to land use at a zone level and will ensure results are based on some desired distribution. For instance, using a 2050 parcel file with PSRC's Vision 2050 policies will ensure that households and jobs are distributed across zones with this same policy reference, even with changes in zone-level totals.
      - If the tool is being run for only a portion of the region (a specific study area), the synthetic household and persons data (hh_and_persons.h5) will be updated with any changes, leaving all other households and persons the same. The user must specify this with the variable **update_existing_h5**. When True, the data from this input hh_and_persons.h5 will be copied and updated where appropriate. When False, an entirely new synthetic population file will be generated, which should only be done when performing a regional-scale analysis.
-- **input_gis_data_path**
-  - A geodatabase (`.gdb`) or shapefile directory that contains the study area TAZ layer named by the **taz_layer** setting (the example uses `study_area_taz`). This layer defines the zones included in the analysis. The PUMA layer is no longer required here — it is downloaded automatically.
-- **input_pums_data_path**
-  - A local directory used as the download/cache location for the PUMS seed files. The tool downloads the PUMS data here automatically; you do not need to place any files in it. Control the download with:
-    - **pums_year**: the PUMS 5-Year vintage to download (e.g. `2021`).
-    - **pums_overwrite**: set to `True` to force a fresh re-download, or `False` to reuse previously downloaded files.
-
-For the example data, these should be set as follows (updating to your local data directory where appropriate):
-- input_land_use_path: `C:\users\test\landuse_scenario_test\land_use\2050`
-- input_gis_data_path: `C:\users\test\landuse_scenario_test\gis_data.gdb`
-- input_pums_data_path: `C:\users\test\landuse_scenario_test\pums_data` (download target; created automatically if it does not exist)
+- **gis_layer_name**
+  - A shapefile (.shp) or geodatabase (.gdb) that contains the study area TAZ layer named by the **taz_layer** setting (the example uses `sub_area_taz.shp`). This layer defines the zones included in the analysis.
+- **pums_year**: the PUMS 5-Year vintage to download (e.g. `2021`).
+- **pums_overwrite**: set to `True` to force a fresh re-download, or `False` to reuse previously downloaded files.
 
 File names for the land use inputs should not be changed for the example data, but users are welcome to change these via the `parcel_file` and `synthetic_pop_file` settings as needed.
 
@@ -57,9 +50,6 @@ Users can turn off some portions of the tool to only allocate jobs, households, 
 - update_persons
 
 Finally, column names can be changed if required for other data sets, but these should generally remain unchanged.
-
-Note that in the [provided example data](https://file.ac/zMj1JWnmnGg/) the land_use folder contains a "2050" sub-directory. This designates this data as 2050. Users can add additional years or scenarios here and should update the config setting "input_land_use_path" to the full path of the desired directory.
-
 
 ## Running the Tool
 
