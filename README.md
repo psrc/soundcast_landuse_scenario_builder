@@ -22,7 +22,7 @@ You can run any command inside the managed environment by prefixing it with `uv 
 
 ## Inputs
 
-The tool requires a small set of local inputs. [Users can download example input data here](https://psrc.files.com/f/e76435638592e0b5). Unzip these folders to a convenient location on your local machine. For example purposes, we will assume the data has been extracted to `C:\users\test\landuse_scenario_test`. The paths below are then specified in **config.yaml** for your run.
+The tool requires a small set of local inputs. [Users can download example input data here](https://psrc.files.com/f/91e49f66389e384d). Unzip these folders to a convenient location on your local machine. For example purposes, we will assume the data has been extracted to `C:\users\test\landuse_scenario_test`. The paths below are then specified in **config.yaml** for your run.
 
 PUMS household/person seed records and the matching PUMA boundaries are downloaded automatically based on the `pums_year` setting, so they do **not** need to be provided as inputs.
 
@@ -32,7 +32,7 @@ The example configuration lives in [examples/psrc_sub_area/config.yaml](examples
 - **input_dir**
   - Soundcast parcel and synthetic population files.
      - The parcel file (parcels_urbansim.txt) will be used to allocate households from TAZ-level controls to parcels. The parcel file used here will determine the spatial detail of any changes to land use at a zone level and will ensure results are based on some desired distribution. For instance, using a 2050 parcel file with PSRC's Vision 2050 policies will ensure that households and jobs are distributed across zones with this same policy reference, even with changes in zone-level totals.
-     - If the tool is being run for only a portion of the region (a specific study area), the synthetic household and persons data (hh_and_persons.h5) will be updated with any changes, leaving all other households and persons the same. The user must specify this with the variable **update_existing_h5**. When True, the data from this input hh_and_persons.h5 will be copied and updated where appropriate. When False, an entirely new synthetic population file will be generated, which should only be done when performing a regional-scale analysis.
+     - If the tool is being run for only a portion of the region (a specific study area), the synthetic household and persons data (hh_and_persons.h5) will be updated with any changes, leaving all other households and persons the same. The user must specify this with the variable **update_existing_h5**. When True, the data from this input hh_and_persons.h5 will be copied and updated where appropriate. When False, an entirely new synthetic population file will be generated, which should only be done when performing a regional-scale analysis. In the psrc_sub_area example [input data](https://psrc.files.com/f/91e49f66389e384d). the parcels_urbansim.txt and hh_and_persons.h5 files represent 2050 forecasts from the [2026-2050 RTP](https://github.com/psrc/soundcast/releases/tag/v4.0_2026_2050_RTP_may2026).
 - **gis_layer_name**
   - A shapefile (.shp) or geodatabase (.gdb) that contains the study area TAZ layer named by the **taz_layer** setting (the example uses `sub_area_taz.shp`). This layer defines the zones included in the analysis.
 - **pums_year**: the PUMS 5-Year vintage to download (e.g. `2021`).
