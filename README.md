@@ -35,6 +35,8 @@ The example configuration lives in [examples/psrc_sub_area/config.yaml](examples
      - If the tool is being run for only a portion of the region (a specific study area), the synthetic household and persons data (hh_and_persons.h5) will be updated with any changes, leaving all other households and persons the same. The user must specify this with the variable **update_existing_h5**. When True, the data from this input hh_and_persons.h5 will be copied and updated where appropriate. When False, an entirely new synthetic population file will be generated, which should only be done when performing a regional-scale analysis. In the psrc_sub_area example [input data](https://psrc.files.com/f/91e49f66389e384d). the parcels_urbansim.txt and hh_and_persons.h5 files represent 2050 forecasts from the [2026-2050 RTP](https://github.com/psrc/soundcast/releases/tag/v4.0_2026_2050_RTP_may2026).
 - **gis_layer_name**
   - A shapefile (.shp) or geodatabase (.gdb) that contains the study area TAZ layer named by the **taz_layer** setting (the example uses `sub_area_taz.shp`). This layer defines the zones included in the analysis.
+- **run_generate_controls**: boolean control to run the first step of the model that generates control files. Users may want to run only this step first, then modify the control totals and only run the next step below.
+- **run_allocate_hh**: allocate households and run populationsim based on control files either produced or edited previously
 - **pums_year**: the PUMS 5-Year vintage to download (e.g. `2021`).
 - **pums_overwrite**: set to `True` to force a fresh re-download, or `False` to reuse previously downloaded files.
 
