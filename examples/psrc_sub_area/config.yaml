@@ -6,6 +6,10 @@ gis_layer_name: 'sub_area_taz.shp'
 # input_pums_data_path: 'C:\Workspace\lu_allocation_inputs\pums_data'
 #input_gis_data_path: 'C:\Workspace\lu_allocation_inputs\gis_data.gdb'
 
+# Controls are generated first, then synthetic population is allocated. Steps can be run independently by setting the following flags.
+run_generate_controls: True
+run_allocate_hh: True
+
 # File names. Most likely, these will remain unchanged. 
 parcel_file: 'parcels_urbansim.txt'
 synthetic_pop_file: 'hh_and_persons.h5'

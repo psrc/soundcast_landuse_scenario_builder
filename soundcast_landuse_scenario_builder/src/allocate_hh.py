@@ -82,7 +82,7 @@ def run(config):
             ).astype("int")
 
         if config.update_hh:
-            df.hh_taz_weight = df.households.copy()
+            df["hh_taz_weight"] = df["households"].copy()
             df.drop(["households"], axis=1, inplace=True)
         if config.update_persons:
             df["pers_taz_weight"] = df["persons"].copy()
@@ -217,7 +217,7 @@ def run(config):
                 emp_factor = (new_total / new_parcel_df["emptot_p"].sum()).values[0]
                 # FIXME: iterating is slow, but we should only have to use it sparingly since most controls should already work off existing job distributions
                 for col in emp_cols:
-                    new_parcel_df[col].fillna(0, inplace=True)
+                    new_parcel_df[col] = new_parcel_df[col].fillna(0)
                     # total jobs by sector
                     jobs_to_assign = (
                         (

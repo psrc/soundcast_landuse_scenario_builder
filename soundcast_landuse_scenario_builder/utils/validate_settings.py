@@ -8,14 +8,17 @@ class ValidateSettings(BaseModel):
     configs_dir: str
     input_dir: str
     gis_layer_name: str
-    # PUMS data year
-    pums_year: int
-    # PUMS overwrite download (Set to True to force re-download of PUMS data)
-    pums_overwrite: bool
+    run_generate_controls: bool
+    run_allocate_hh: bool
     # File names. Most likely, these will remain unchanged. 
     parcel_file: str
     synthetic_pop_file: str
     taz_layer: str
+    # PUMS data year
+    pums_year: int
+    # PUMS overwrite download (Set to True to force re-download of PUMS data)
+    pums_overwrite: bool
+
 
     # Output dir. This is where the inputs to populationsim will reside. 
     # Warning- this entire directory will be over-written. 
