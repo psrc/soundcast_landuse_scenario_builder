@@ -95,17 +95,14 @@ def run(config):
 
     # Run populationsim with controls for study area
     try:
-        result = subprocess.run(
+        # stdout/stderr are not captured so populationsim output streams to the terminal
+        subprocess.run(
             ["populationsim", "-w", config.output_dir],
             check=True,
-            capture_output=True,
-            text=True,
         )
     except subprocess.CalledProcessError as e:
         # Triggered if the command runs but returns a non-zero (crash) exit status
         print(f"Command crashed with exit code: {e.returncode}")
-        print(f"Error output (stderr): {e.stderr}")
-        print(f"Standard output (stdout): {e.stdout}")
 
     except FileNotFoundError as e:
         # Triggered if the command executable itself cannot be found on the system
