@@ -233,8 +233,11 @@ def run(config, args):
     col_list.append(recode(study_area_persons, 'pwtyp', 'worker', [0, 999], ['is_worker'], 'taz_id'))
 
     # Race
-    col_list.append(recode(study_area_persons, 'prace', 'num_hh', [0, 1, 2, 3, 4, 5, 6, 200], 
-                        ['white_non_hispanic', 'black_non_hispanic', 'asian_non_hispanic', 'other_non_hispanic', 'two_or_more_races_non_hispanic', 'white_hispanic', 'non_white_hispanic'], 'taz_id'))
+    # col_list.append(recode(study_area_persons, 'prace', 'num_hh', [0, 1, 2, 3, 4, 5, 6, 200], 
+    #                     ['white_non_hispanic', 'black_non_hispanic', 'asian_non_hispanic', 'other_non_hispanic', 'two_or_more_races_non_hispanic', 'white_hispanic', 'non_white_hispanic'], 'taz_id'))
+
+    col_list.append(recode(study_area_persons, 'prace', 'num_hh', [0, 1, 2, 5, 6, 7, 8, 200], 
+                        ['white', 'black', 'native_american', 'asian', 'pac_islander', 'other', 'two_or_more'], 'taz_id'))
 
     df = pd.concat(col_list, axis = 1)
     df.reset_index(inplace = True)

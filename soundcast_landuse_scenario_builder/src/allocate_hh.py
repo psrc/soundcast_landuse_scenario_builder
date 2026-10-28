@@ -392,39 +392,43 @@ def run(config):
     ] = 8  # Child age 0-4
 
     # Race
-    # white_non_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P == 1) & (new_person_df.HISP < 2), "prace"
-    ] = 1
-    # black_non_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P == 2) & (new_person_df.HISP < 2), "prace"
-    ] = 2
-    # asian_non_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P == 6) & (new_person_df.HISP < 2), "prace"
-    ] = 3
-    # other_non_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P != 1)
-        & (new_person_df.RAC1P != 2)
-        & (new_person_df.RAC1P != 6)
-        & (new_person_df.RAC1P != 9)
-        & (new_person_df.HISP < 2),
-        "prace",
-    ] = 4
-    # two_or_more_races_non_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P == 9) & (new_person_df.HISP < 2), "prace"
-    ] = 5
-    # white_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P == 1) & (new_person_df.HISP > 1), "prace"
-    ] = 6
-    # non_white_hispanic
-    new_person_df.loc[
-        (new_person_df.RAC1P != 1) & (new_person_df.HISP > 1), "prace"
-    ] = 7
+    # # white_non_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P == 1) & (new_person_df.HISP < 2), "prace"
+    # ] = 1
+    # # black_non_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P == 2) & (new_person_df.HISP < 2), "prace"
+    # ] = 2
+    # # asian_non_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P == 6) & (new_person_df.HISP < 2), "prace"
+    # ] = 3
+    # # other_non_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P != 1)
+    #     & (new_person_df.RAC1P != 2)
+    #     & (new_person_df.RAC1P != 6)
+    #     & (new_person_df.RAC1P != 9)
+    #     & (new_person_df.HISP < 2),
+    #     "prace",
+    # ] = 4
+    # # two_or_more_races_non_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P == 9) & (new_person_df.HISP < 2), "prace"
+    # ] = 5
+    # # white_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P == 1) & (new_person_df.HISP > 1), "prace"
+    # ] = 6
+    # # non_white_hispanic
+    # new_person_df.loc[
+    #     (new_person_df.RAC1P != 1) & (new_person_df.HISP > 1), "prace"
+    # ] = 7
+
+    # use RAC1P directly for race categories
+    new_person_df["prace"] = new_person_df["RAC1P"]
+    
 
     # Get associated household ID
     new_person_df = new_person_df.merge(

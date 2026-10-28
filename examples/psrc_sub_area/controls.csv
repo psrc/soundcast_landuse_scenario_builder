@@ -37,10 +37,10 @@ income_gt75_lt100,taz_id,households,5000,income_gt75_lt100,(households.HINCP >= 
 income_gt100_lt200,taz_id,households,5000,income_gt100_lt200,(households.HINCP >= 100000) & (households.HINCP < 200000)
 income_gt200,taz_id,households,5000,income_gt200,households.HINCP >= 200000
 is_worker,taz_id,persons,5000,is_worker,persons.is_worker == 1
-white_hispanic,taz_id,persons,5000,white_hispanic,(persons.RAC1P == 1) & (persons.HISP>1)
-non_white_hispanic,taz_id,persons,5000,non_white_hispanic,(persons.RAC1P != 1) & (persons.HISP>1)
-white_non_hispanic,taz_id,persons,5000,white_non_hispanic,(persons.RAC1P == 1) & (persons.HISP<2)
-black_non_hispanic,taz_id,persons,5000,black_non_hispanic,(persons.RAC1P == 2) & (persons.HISP<2)
-other_non_hispanic,taz_id,persons,5000,other_non_hispanic,(persons.RAC1P != 1) & (persons.RAC1P != 2) & (persons.RAC1P != 6) & (persons.RAC1P != 9) & (persons.HISP<2)
-asian_non_hispanic,taz_id,persons,5000,asian_non_hispanic,(persons.RAC1P==6) & (persons.HISP<2)
-two_or_more_races_non_hispanic,taz_id,persons,5000,two_or_more_races_non_hispanic,(persons.RAC1P==9) & (persons.HISP<2)
+white,taz_id,persons,5000,white,persons.RAC1P == 1
+black,taz_id,persons,5000,black,persons.RAC1P == 2
+native_american,taz_id,persons,5000,native_american,"persons.RAC1P.isin([3,4,5])"
+asian,taz_id,persons,5000,asian,persons.RAC1P == 6
+pac_islander,taz_id,persons,5000,pac_islander,persons.RAC1P == 7
+other,taz_id,persons,5000,other,persons.RAC1P == 8
+two_or_more,taz_id,persons,5000,two_or_more,persons.RAC1P == 9
