@@ -1,5 +1,6 @@
 # Set data and user input location
 input_dir: 'C:\workspace\psrc_sub_area_inputs'
+
 # Name of GIS layer or shapefile within input_dir. This layer must contain the TAZs for the study area.
 gis_layer_name: 'sub_area_taz.shp'
 #input_land_use_path: 'C:\Workspace\lu_allocation_inputs\land_use\2050's
@@ -15,9 +16,15 @@ parcel_file: 'parcels_urbansim.txt'
 synthetic_pop_file: 'hh_and_persons.h5'
 taz_layer: 'study_area_taz'
 
+# optional proportion adjustments to alter the default proportions applied to 
+# the synthetic population instead of (or in addition to) adjustments to totals
+# see proportion_adjustments.csv for an example of adjustments to race and household size
+# each TAZ should sum to 1 within each category (e.g., race, household size)
+# proportion_adjustments_file: 'proportion_adjustments.csv' 
+
 # Output dir. This is where the inputs to populationsim will reside. 
 # Warning- this entire directory will be over-written. 
-output_dir: 'C:\Workspace\land_use_test\psrc_sub_area_inputs\populationsim_run_dir'
+output_dir: 'C:\workspace\psrc_sub_area_inputs\populationsim_run_dir'
 
 # PUMS data year
 pums_year: 2021

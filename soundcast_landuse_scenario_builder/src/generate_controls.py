@@ -24,6 +24,7 @@ import h5py
 import yaml
 from pathlib import Path
 import shutil
+from iteround import saferound
 
 from soundcast_landuse_scenario_builder.utils import download_pums_data, prepare_pums_data, download_puma_shp
 
@@ -116,6 +117,71 @@ def apply_seed_expressions(df_expr, context):
             })
 
     return context, expression_log
+
+
+def apply_proportion_adjustments(df, prop_adj_file):
+    """
+    Apply proportion adjustments to the given DataFrame based on the provided proportion adjustment file.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame containing TAZs and person weights.
+    prop_adj_file (str): Path to the CSV file containing proportion adjustments.
+
+    Returns:
+    pd.DataFrame: The adjusted DataFrame with proportions applied and rounded.
+    """
+    # df may have duplicate index labels from earlier concat; label-based writes below require a unique index
+    df = df.reset_index(drop=True)
+    prop_adj = pd.read_csv(prop_adj_file)
+
+    # Total column (e.g. pers_taz_weight or hh_taz_weight) each control is a proportion of
+    control_total_col = prop_adj.drop_duplicates('control').set_index('control')['total_col']
+
+    # Regional proportions (rows with no taz_id), indexed by control
+    region_prop = prop_adj.loc[prop_adj['taz_id'].isna()].set_index('control')['proportion']
+
+    # TAZ-specific proportions
+    prop_adj = prop_adj.loc[prop_adj['taz_id'].notna()]
+
+    # Wide table: one row per TAZ, one column per control (including regional-only controls)
+    prop = prop_adj.pivot(index='taz_id', columns='control', values='proportion')
+    prop = prop.reindex(columns=prop.columns.union(region_prop.index))
+
+    # Align to df's TAZs; any missing TAZ/control proportion falls back to the regional one
+    prop = prop.reindex(df['taz_id']).fillna(region_prop)
+
+    # Multiply each control by its total_col (per TAZ) and overwrite whole columns
+    totals = pd.DataFrame(
+        {control: df[control_total_col[control]].to_numpy() for control in prop.columns},
+        index=prop.index,
+    )
+    adj = prop * totals
+    adj.index = df.index
+    df[adj.columns] = adj.combine_first(df.reindex(columns=adj.columns))
+
+    # saferound the adjusted values to ensure they sum to the group's total_col by TAZ
+    grouped_controls = prop_adj.groupby('group')['control'].unique().apply(list).to_dict()
+    group_total_col = prop_adj.groupby('group')['total_col'].unique().apply(list).to_dict()
+    for group, total_cols in group_total_col.items():
+        if len(total_cols) != 1:
+            raise ValueError(f"Group {group} has multiple total_col values: {total_cols}")
+    for group, controls in grouped_controls.items():
+        for index, row in df.iterrows():
+            round_list = row[controls].values.tolist()
+            round_list = saferound(round_list, places=0)
+            df.loc[index, controls] = round_list
+        df[controls] = df[controls].astype(int)
+
+    # double check each group sums to its total_col for every TAZ
+    for group, controls in grouped_controls.items():
+        total_col = group_total_col[group][0]
+        df['check_sum'] = df[controls].sum(axis=1)
+        if not all(df['check_sum'] == df[total_col]):
+            raise ValueError(f"Group {group} does not sum to {total_col} for all rows.")
+        df.drop(columns='check_sum', inplace=True)
+    
+    return df
+
 
 #config = yaml.safe_load(open("config.yaml"))
 def run(config, args):
@@ -269,6 +335,11 @@ def run(config, args):
     allocate_df = allocate_df.astype('int')
     allocate_df.to_csv(popsim_run_dir_path/'data'/'user_allocation.csv', index=False)
     df.fillna(0, inplace=True)
+
+    # apply proportion adjustments from optional user-provided csv
+    if config.proportion_adjustments_file is not None:
+        prop_adj_file = Path(f"{config.input_dir}/{config.proportion_adjustments_file}")
+        df = apply_proportion_adjustments(df, prop_adj_file)
 
     ## Enforce integers
     df = df.astype('int')
