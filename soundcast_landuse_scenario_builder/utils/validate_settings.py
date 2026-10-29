@@ -14,6 +14,7 @@ class ValidateSettings(BaseModel):
     parcel_file: str
     synthetic_pop_file: str
     taz_layer: str
+    proportion_adjustments_file: Optional[str] = None
     # PUMS data year
     pums_year: int
     # PUMS overwrite download (Set to True to force re-download of PUMS data)
