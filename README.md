@@ -39,6 +39,7 @@ The example configuration lives in [examples/psrc_sub_area/config.yaml](examples
 - **run_allocate_hh**: allocate households and run populationsim based on control files either produced or edited previously
 - **pums_year**: the PUMS 5-Year vintage to download (e.g. `2021`).
 - **pums_overwrite**: set to `True` to force a fresh re-download, or `False` to reuse previously downloaded files.
+- **proportion_adjustments_file (optional)**: The proportions of any particular control can be adjusted for each TAZ by supplying a csv. See proportions_adjustment.csv in the sub_area_example input data.
 
 File names for the land use inputs should not be changed for the example data, but users are welcome to change these via the `parcel_file` and `synthetic_pop_file` settings as needed.
 
